@@ -1,0 +1,60 @@
+<!--pages/anniversary/anniversary.wxml-->
+<view class="anniversary-container">
+	<view class="anniversary-list">
+		<view class="anniversary-card">
+			<view class="card-left">
+				<text class="icon" style="font-size:80rpx;">👩‍🦰</text>
+			</view>
+			<view class="card-right">
+				<view class="card-title-row">
+					<text class="anniversary-name">老婆生日</text>
+					<text class="anniversary-type">农历7月16</text>
+				</view>
+				<text class="anniversary-date">阳历：{{wifeSolar}}</text>
+				<text class="countdown-number">{{wifeBirthdayDays}}</text>
+				<text class="countdown-unit">天后</text>
+			</view>
+		</view>
+		<view class="anniversary-card">
+			<view class="card-left">
+				<text class="icon" style="font-size:80rpx;">🧑‍🦱</text>
+			</view>
+			<view class="card-right">
+				<view class="card-title-row">
+					<text class="anniversary-name">老公生日</text>
+					<text class="anniversary-type">农历6月24</text>
+				</view>
+				<text class="anniversary-date">阳历：{{husbandSolar}}</text>
+				<text class="countdown-number">{{husbandBirthdayDays}}</text>
+				<text class="countdown-unit">天后</text>
+			</view>
+		</view>
+		<view class="anniversary-card">
+			<view class="card-left">
+				<text class="icon" style="font-size:80rpx;">💑</text>
+			</view>
+			<view class="card-right">
+				<view class="card-title-row">
+					<text class="anniversary-name">恋爱纪念日</text>
+					<text class="anniversary-type">每年9月14日</text>
+				</view>
+				<text class="anniversary-date">距离下次还有 {{loveCountdown}} 天</text>
+				<text class="countdown-number">{{loveDays}}</text>
+				<text class="countdown-unit">天已过</text>
+			</view>
+		</view>
+        <view class="anniversary-card">
+			<view class="card-left">
+				<text class="icon" style="font-size:80rpx;">💍</text>
+			</view>
+			<view class="card-right">
+				<view class="card-title-row">
+					<text class="anniversary-name">结婚纪念日</text>
+				</view>
+				<text class="anniversary-date">待定</text>
+				<text class="countdown-number">--</text>
+				<text class="countdown-unit">--</text>
+			</view>
+		</view>
+	</view>
+</view>

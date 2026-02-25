@@ -1,0 +1,263 @@
+.anniversary-container {
+  min-height: calc(100vh - 20rpx);
+  background-color: #f5f5f5;
+  margin-top: 20rpx;
+}
+
+/* 恋爱纪念日大图 */
+.love-banner {
+  position: relative;
+  height: 400rpx;
+  overflow: hidden;
+}
+
+.banner-bg {
+  width: 100%;
+  height: 100%;
+}
+
+.banner-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+.love-title {
+  font-size: 32rpx;
+  margin-bottom: 20rpx;
+}
+
+.love-days {
+  font-size: 120rpx;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.love-unit {
+  font-size: 40rpx;
+  margin-top: 10rpx;
+}
+
+.love-date {
+  font-size: 28rpx;
+  margin-top: 20rpx;
+  opacity: 0.9;
+}
+
+/* 列表 */
+.anniversary-list {
+  height: calc(100vh - 400rpx - 140rpx);
+  padding: 0 30rpx;
+}
+
+.list-header {
+  padding: 40rpx 0 20rpx;
+}
+
+.header-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 纪念日卡片 */
+.anniversary-card {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 160rpx;
+  margin-right: 30rpx;
+}
+
+.countdown-number {
+  font-size: 72rpx;
+  font-weight: bold;
+  color: #ff69b4;
+  line-height: 1;
+}
+
+.countdown-unit {
+  font-size: 28rpx;
+  color: #ff69b4;
+  margin-top: 10rpx;
+}
+
+.card-right {
+  flex: 1;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.anniversary-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 10rpx;
+}
+
+.top-badge {
+  font-size: 24rpx;
+}
+
+.anniversary-date {
+  font-size: 28rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.anniversary-type {
+  font-size: 24rpx;
+  color: #999;
+  background-color: #f5f5f5;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  display: inline-block;
+}
+
+.card-menu {
+  padding: 10rpx;
+}
+
+.menu-icon {
+  font-size: 36rpx;
+  color: #999;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.empty-hint {
+  font-size: 28rpx;
+  color: #ccc;
+}
+
+.bottom-placeholder {
+  height: 40rpx;
+}
+
+/* 底部按钮 */
+.footer-add {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 20rpx 30rpx;
+  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.add-btn {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  color: #fff;
+  border-radius: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  border: none;
+}
+
+.add-btn::after {
+  border: none;
+}
+
+.btn-icon {
+  font-size: 40rpx;
+  margin-right: 10rpx;
+}
+
+.safe-area-bottom {
+  height: constant(safe-area-inset-bottom);
+  height: env(safe-area-inset-bottom);
+}
+
+/* 操作菜单 */
+.action-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  align-items: flex-end;
+}
+
+.action-content {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 30rpx;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  font-size: 32rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.action-item:last-child {
+  border-bottom: none;
+}
+
+.action-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.action-item.delete {
+  color: #ff4444;
+}
+
+.action-item.cancel {
+  justify-content: center;
+  margin-top: 20rpx;
+  border-top: 1rpx solid #f5f5f5;
+  color: #999;
+}

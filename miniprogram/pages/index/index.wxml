@@ -1,0 +1,111 @@
+<view class="container" bindtap="closeCardActionSheet">
+    <!-- 时光轴列表 -->
+    <scroll-view class="timeline-scroll" scroll-y bindscrolltolower="loadMore" lower-threshold="100"
+        style="padding-top: unset">
+        <!-- 顶部栏：情侣头像 + 昵称 + 恋爱天数 -->
+        <view class="header">
+            <view class="couple-info">
+                <image class="avatar avatar-left" src="https://636c-cloud1-5g9hjld9cb8fe986-1310518816.tcb.qcloud.la/image/avatar.png?sign=a1d2f2c76c847588d578eda29decd4e1&t=1771920256" mode="aspectFill"></image>
+                <image class="avatar avatar-right" src="https://636c-cloud1-5g9hjld9cb8fe986-1310518816.tcb.qcloud.la/image/couple.png?sign=7969f2a69762c05e8992f6f7d0baa8c2&t=1771920305" mode="aspectFill"></image>
+            </view>
+            <text class="couple-name">{{coupleName}}</text>
+            <view class="love-days">
+                <text class="emoji">🥰</text>
+                <text class="days-text">{{coupleName}} {{loveDays}} 天</text>
+                <text class="emoji">🥰</text>
+            </view>
+        </view>
+        <!-- 日期分组 -->
+        <block wx:for="{{dailyList}}" wx:key="_id">
+            <!-- 日期卡片 -->
+            <view class="date-card" wx:if="{{item.showDate}}">
+                <text class="date-icon">🗓️</text>
+                <text class="date-text">{{item.dateText}}</text>
+            </view>
+
+            <!-- 日常卡片 -->
+            <view class="daily-card">
+                <!-- 卡片头部 -->
+                <view class="card-header">
+                    <image wx:if="{{item.authorOpenid == 'ounUN5p0KPTKPA9KwPVg2eYL3XvY'}}" class="author-avatar" src="https://636c-cloud1-5g9hjld9cb8fe986-1310518816.tcb.qcloud.la/image/avatar.png?sign=a1d2f2c76c847588d578eda29decd4e1&t=1771920256" mode="aspectFill"></image>
+                    <image wx:else class="author-avatar" src="https://636c-cloud1-5g9hjld9cb8fe986-1310518816.tcb.qcloud.la/image/couple.png?sign=7969f2a69762c05e8992f6f7d0baa8c2&t=1771920305" mode="aspectFill"></image>
+                    <view class="header-info">
+                        <text class="publish-time">{{item.timeText}}</text>
+                    </view>
+                    <view class="card-actions" style="margin-left:auto;">
+                        <text class="action-more" catchtap="onCardMoreTap" data-id="{{item._id}}">⋯</text>
+                        <!-- 浮动操作菜单弹窗（仅当前卡片显示，定位在三个点下方） -->
+                        <view wx:if="{{showCardActionSheet && currentActionCardId == item._id}}" class="card-action-sheet-float-mask" bindtap="closeCardActionSheet">
+                            <view class="card-action-sheet-float" catchtap="stopPropagation">
+                                <view class="card-action-sheet-float-inner">
+                                    <view class="action-sheet-item" bindtap="onEditCard">修改</view>
+                                    <view class="action-sheet-item delete" bindtap="onDeleteCard">删除</view>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+
+                <!-- 文字内容 -->
+                <text class="card-content" wx:if="{{item.content}}">{{item.content}}</text>
+
+                <!-- 图片网格（最多9张） -->
+                <view class="image-grid {{item.imgList.length === 1 ? 'single' : ''}}"
+                    wx:if="{{item.imgList.length > 0}}">
+                    <image wx:for="{{item.imgList}}" wx:for-item="img" wx:key="index" class="grid-image" src="{{img}}"
+                        mode="aspectFill" bindtap="previewImage" data-urls="{{item.imgList}}" data-current="{{img}}">
+                    </image>
+                </view>
+
+                <!-- 视频封面 -->
+                <view class="video-cover" wx:if="{{item.videoUrl}}" bindtap="playVideo" data-url="{{item.videoUrl}}">
+                    <image class="cover-image" src="{{item.videoCover}}" mode="aspectFill"></image>
+                    <image class="play-icon" src="https://636c-cloud1-5g9hjld9cb8fe986-1310518816.tcb.qcloud.la/image/play.png?sign=1d813b5f5efdac8dbbdf4e777386d6a2&t=1771920024" mode="aspectFit"></image>
+                </view>
+
+                <!-- 标签 + 地点 -->
+                <view class="card-footer">
+                    <view class="tags" wx:if="{{item.tags.length > 0}}">
+                        <text class="tag" wx:for="{{item.tags}}" wx:key="index">#{{item}}</text>
+                    </view>
+                    <text class="location" wx:if="{{item.location}}">📍 {{item.location}}</text>
+                </view>
+            </view>
+        </block>
+
+        <!-- 加载更多 -->
+        <view class="loading-more" wx:if="{{hasMore}}">
+            <text>加载中...</text>
+        </view>
+
+        <!-- 没有更多 -->
+        <view class="no-more" wx:if="{{!hasMore && dailyList.length > 0}}">
+            <text>... 历史日常卡片 ...</text>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{dailyList.length === 0 && !loading}}">
+            <text class="empty-text">快来发布你们的第一条甜蜜日常吧❤️</text>
+        </view>
+    </scroll-view>
+
+    <!-- 底部TabBar（固定在屏幕最下方，4个入口） -->
+    <view class="bottom-tabbar">
+        <view class="tab-item active">
+            <text class="tab-icon">✅</text>
+            <text class="tab-text">时光轴</text>
+        </view>
+        <view class="tab-item" bindtap="goToPublish">
+            <text class="tab-icon">+</text>
+            <text class="tab-text">发布</text>
+        </view>
+        <view class="tab-item" bindtap="goToAnniversary">
+            <text class="tab-icon">🗓️</text>
+            <text class="tab-text">纪念日</text>
+        </view>
+        <view class="tab-item" bindtap="goToProfile">
+            <text class="tab-icon">❤️</text>
+            <text class="tab-text">我的</text>
+        </view>
+    </view>
+</view>

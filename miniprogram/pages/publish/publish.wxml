@@ -1,0 +1,144 @@
+<wxs module="utils">
+  var isTagSelected = function(selectedTags, tag) {
+    for (var i = 0; i < selectedTags.length; i++) {
+      if (selectedTags[i] === tag) {
+        return true;
+      }
+    }
+    return false;
+  };
+  
+  module.exports.isTagSelected = isTagSelected;
+</wxs>
+
+<view class="publish-container">
+  <!-- 顶部安全区域占位 -->
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+  
+  <!-- 顶部栏 -->
+  <view class="header">
+    <view class="header-left" bindtap="goBack">
+      <text class="back-icon">←</text>
+      <text class="back-text">返回</text>
+    </view>
+    <text class="header-title">发布甜蜜日常</text>
+    <view class="header-right"></view>
+  </view>
+
+  <!-- 内容区域 -->
+  <scroll-view class="content-scroll" scroll-y>
+    <!-- 文字输入框 -->
+    <view class="input-section">
+      <textarea 
+        class="content-input" 
+        placeholder="写下你们的甜蜜瞬间吧～" 
+        placeholder-class="placeholder"
+        maxlength="-1"
+        auto-height
+        value="{{content}}"
+        bindinput="onContentInput"
+      />
+    </view>
+
+    <!-- 图片上传区 -->
+    <view class="upload-section">
+      <view class="section-title">
+        <text class="title-icon">📷</text>
+        <text class="title-text">上传图片/视频</text>
+      </view>
+      
+      <!-- 图片列表 -->
+      <view class="image-list" wx:if="{{imgList.length > 0}}">
+        <view class="image-item" wx:for="{{imgList}}" wx:key="index">
+          <image class="preview-image" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}"></image>
+          <view class="delete-btn" bindtap="deleteImage" data-index="{{index}}">
+            <text class="delete-icon">×</text>
+          </view>
+          <view class="upload-mask" wx:if="{{item.uploading}}">
+            <text class="upload-text">上传中...</text>
+          </view>
+        </view>
+        
+        <!-- 添加图片按钮 -->
+        <view class="add-btn" wx:if="{{imgList.length < 9 && !videoUrl}}" bindtap="chooseImage">
+          <text class="add-icon">+</text>
+          <text class="add-text">添加图片/视频</text>
+        </view>
+      </view>
+
+      <!-- 视频预览 -->
+      <view class="video-preview" wx:if="{{videoUrl}}">
+        <video class="preview-video" src="{{videoUrl}}" controls poster="{{videoCover}}"></video>
+        <view class="delete-btn" bindtap="deleteVideo">
+          <text class="delete-icon">×</text>
+        </view>
+      </view>
+
+      <!-- 上传按钮（初始状态） -->
+      <view class="upload-btn-group" wx:if="{{imgList.length === 0 && !videoUrl}}">
+        <button class="upload-btn" bindtap="chooseImage">
+          <text class="btn-icon">📷</text>
+          <text class="btn-text">上传图片/视频</text>
+          <text class="btn-hint">最多9张图片</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 标签选择 -->
+    <view class="tag-section">
+      <view class="section-title">
+        <text class="title-icon">🏷️</text>
+        <text class="title-text">添加标签</text>
+      </view>
+      <view class="tag-list">
+        <view 
+          class="tag-item {{utils.isTagSelected(selectedTags, item) ? 'active' : ''}}" 
+          wx:for="{{tagOptions}}" 
+          wx:key="index"
+          bindtap="toggleTag"
+          data-tag="{{item}}"
+        >
+          <text class="tag-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 地点选择（可选） -->
+    <view class="location-section">
+      <view class="section-title">
+        <text class="title-icon">📍</text>
+        <text class="title-text">添加地点（可选）</text>
+      </view>
+      <input 
+        class="location-input" 
+        placeholder="输入地点" 
+        value="{{location}}"
+        bindinput="onLocationInput"
+      />
+    </view>
+
+    <!-- 底部占位 -->
+    <view class="bottom-placeholder"></view>
+  </scroll-view>
+
+  <!-- 上传组件交互细节说明 -->
+  <view class="upload-notes">
+    <text class="note-title">✅ 上传组件交互细节：</text>
+    <text class="note-item">- 点击「[+]」弹出底部菜单：「从相册选择」「拍摄」，选择后动态上传至云存储；</text>
+    <text class="note-item">- 视频上传后：封面图片显示「📹」标识，区分图片和视频；</text>
+    <text class="note-item">- 所有上传的文件：长按可预览大图/播放视频，点击右上角[×]可删除；</text>
+  </view>
+
+  <!-- 底部发布按钮 -->
+  <view class="footer-publish">
+    <button 
+      class="publish-btn {{canPublish ? 'active' : ''}}" 
+      bindtap="handlePublish"
+      disabled="{{!canPublish}}"
+    >
+      发布
+    </button>
+    <!-- 底部安全区域占位 -->
+    <view class="safe-area-bottom"></view>
+  </view>
+</view>

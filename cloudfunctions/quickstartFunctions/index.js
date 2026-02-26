@@ -1,4 +1,5 @@
 const cloud = require("wx-server-sdk");
+const { Time } = require("../../miniprogram/utils/dateTime");
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
 });
@@ -35,7 +36,7 @@ const getMiniProgramCode = async () => {
 const createOrUpdateUser = async (event) => {
   const wxContext = cloud.getWXContext();
   const { gender, coupleId, partnerOpenid } = event;
-  const now = new Date().toLocaleString('zh-CN', { hour12: false });
+  const now = Time.nowString();
   
   try {
     // 查询用户是否已存在
@@ -113,7 +114,7 @@ const unbindCouple = async () => {
         data: {
           coupleId: '',
           partnerOpenid: '',
-          updateTime: new Date().toLocaleString('zh-CN', { hour12: false })
+          updateTime: Time.nowString()
         }
       });
       return { success: true, message: '已解除情侣关系' };
@@ -139,7 +140,7 @@ const bindPartner = async (event) => {
         data: {
           coupleId,
           partnerOpenid: myOpenid,
-          updateTime: new Date().toLocaleString('zh-CN', { hour12: false })
+          updateTime: Time.nowString()
         }
       });
       
@@ -155,7 +156,7 @@ const bindPartner = async (event) => {
             coupleName: '我们',
             bgUrl: '',
             isPrivate: true,
-            loveStartDate: new Date().toLocaleDateString('zh-CN')
+            loveStartDate: Time.nowString('YYYY-MM-DD')
           }
         });
       }
@@ -173,8 +174,7 @@ const bindPartner = async (event) => {
 const createDaily = async (event) => {
   const wxContext = cloud.getWXContext();
   const { coupleId, content, imgList, videoUrl, videoCover, location, tags } = event;
-  const now = new Date().toLocaleString('zh-CN', { hour12: false });
-  
+  const now = Time.nowString(); // 使用全局挂载的时间工具获取当前时间字符串
   try {
     await db.collection('daily').add({
       data: {
@@ -186,7 +186,7 @@ const createDaily = async (event) => {
         videoCover: videoCover || '',
         location: location || '',
         isTop: false,
-        createTime: now,
+        createTime: '1998/08/14 00:00:00', // 固定时间，前端根据 createTime 显示为 "刚刚"
         tags: tags || []
       }
     });

@@ -1,3 +1,5 @@
+const { Time } = require('../../utils/dateTime.js');
+
 // pages/anniversary/anniversary.js
 Page({
 
@@ -26,7 +28,7 @@ Page({
   },
 
   calculateAnniversaries() {
-    const today = new Date();
+    const today = Time.now(); // 使用全局挂载的时间工具获取当前时间 Date 对象
     // 引入农历转公历静态映射
     const lunar = require('./lunar.js');
     // 老婆生日

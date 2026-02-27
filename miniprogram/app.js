@@ -1,9 +1,14 @@
 // app.js
+import { Time } from './utils/dateTime';
+
 App({
   globalData: {
     openid: "",
     userInfo: null,
   },
+
+  // 全局挂载时间工具
+  Time,
 
   onLaunch: function () {
     this.globalData = {

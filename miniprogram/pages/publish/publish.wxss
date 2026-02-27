@@ -6,65 +6,13 @@
   flex-direction: column;
 }
 
-/* 顶部安全区域 */
-.status-bar {
-  width: 100%;
-  background: #FFF;
-}
-
-/* 顶部栏 */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20rpx 30rpx;
-  background: #FFF;
-  border-bottom: 1rpx solid #F0F0F0;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
-}
-
-.back-icon {
-  font-size: 36rpx;
-  color: #333;
-  margin-right: 10rpx;
-}
-
-.back-text {
-  font-size: 28rpx;
-  color: #666;
-}
-
-.header-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  flex: 2;
-}
-
-.header-right {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-
 .publish-btn {
-  background: #E0E0E0;
-  color: #999;
+  background-color: #FF69B4 !important;
+  color: #FFF !important;
   font-size: 28rpx;
   padding: 12rpx 32rpx;
   border-radius: 40rpx;
   border: none;
-}
-
-.publish-btn.active {
-  background: #FF69B4;
-  color: #FFF;
 }
 
 /* 内容滚动区 */
@@ -72,6 +20,7 @@
   flex: 1;
   padding: 0 30rpx;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* 文字输入区 */
@@ -84,7 +33,7 @@
 
 .content-input {
   width: 100%;
-  min-height: 200rpx;
+  min-height: 130rpx;
   font-size: 28rpx;
   line-height: 1.6;
   color: #333;

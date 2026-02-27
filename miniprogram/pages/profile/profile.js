@@ -1,3 +1,5 @@
+import { Time } from "../../utils/dateTime"
+
 Page({
   data: {
     statusBarHeight: 0,
@@ -35,8 +37,8 @@ Page({
 
   // 计算纪念日天数
   calculateLoveDays() {
-    const startDate = new Date(this.data.loveStartDate)
-    const today = new Date()
+    const startDate = Time.toTimestamp(this.data.loveStartDate); // 使用全局挂载的时间工具解析日期字符串为 Date 对象
+    const today = Time.now() // 使用全局挂载的时间工具获取当前时间 Date 对象
     const days = Math.floor((today - startDate) / (1000 * 60 * 60 * 24))
     this.setData({ loveDays: days })
   },

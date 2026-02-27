@@ -35,7 +35,8 @@ const getMiniProgramCode = async () => {
 const createOrUpdateUser = async (event) => {
   const wxContext = cloud.getWXContext();
   const { gender, coupleId, partnerOpenid } = event;
-  const now = new Date().toLocaleString('zh-CN', { hour12: false });
+  const date = new Date();
+  const now = new Date(date.getTime() + 8 * 60 * 60 * 1000);
   
   try {
     // 查询用户是否已存在
@@ -87,94 +88,11 @@ const getUser = async () => {
   }
 };
 
-// 获取情侣信息（双方）
-const getCoupleInfo = async (event) => {
-  const { coupleId } = event;
-  try {
-    const res = await db.collection('user').where({
-      coupleId
-    }).get();
-    return { success: true, data: res.data };
-  } catch (err) {
-    return { success: false, error: err };
-  }
-};
-
-// 解除情侣关系
-const unbindCouple = async () => {
-  const wxContext = cloud.getWXContext();
-  try {
-    const userRes = await db.collection('user').where({
-      openid: wxContext.OPENID
-    }).get();
-    
-    if (userRes.data.length > 0) {
-      await db.collection('user').doc(userRes.data[0]._id).update({
-        data: {
-          coupleId: '',
-          partnerOpenid: '',
-          updateTime: new Date().toLocaleString('zh-CN', { hour12: false })
-        }
-      });
-      return { success: true, message: '已解除情侣关系' };
-    }
-    return { success: false, message: '用户不存在' };
-  } catch (err) {
-    return { success: false, error: err };
-  }
-};
-
-// 绑定情侣（对方确认）
-const bindPartner = async (event) => {
-  const { partnerOpenid, coupleId, myOpenid } = event;
-  try {
-    // 查询对方用户
-    const partnerRes = await db.collection('user').where({
-      openid: partnerOpenid
-    }).get();
-    
-    if (partnerRes.data.length > 0) {
-      // 更新对方的情侣信息
-      await db.collection('user').doc(partnerRes.data[0]._id).update({
-        data: {
-          coupleId,
-          partnerOpenid: myOpenid,
-          updateTime: new Date().toLocaleString('zh-CN', { hour12: false })
-        }
-      });
-      
-      // 创建情侣设置（如果不存在）
-      const settingRes = await db.collection('setting').where({
-        coupleId
-      }).get();
-      
-      if (settingRes.data.length === 0) {
-        await db.collection('setting').add({
-          data: {
-            coupleId,
-            coupleName: '我们',
-            bgUrl: '',
-            isPrivate: true,
-            loveStartDate: new Date().toLocaleDateString('zh-CN')
-          }
-        });
-      }
-      
-      return { success: true, message: '绑定成功' };
-    }
-    return { success: false, message: '对方用户不存在' };
-  } catch (err) {
-    return { success: false, error: err };
-  }
-};
-
 // ==================== 情侣日常记录表 CRUD ====================
 // 创建日常记录
 const createDaily = async (event) => {
   const wxContext = cloud.getWXContext();
   const { coupleId, content, imgList, videoUrl, videoCover, location, tags } = event;
-  const now = new Date().toLocaleString('zh-CN', { hour12: false });
-  
   try {
     await db.collection('daily').add({
       data: {
@@ -186,7 +104,8 @@ const createDaily = async (event) => {
         videoCover: videoCover || '',
         location: location || '',
         isTop: false,
-        createTime: now,
+        createTime: new Date(),
+        updateTime: new Date(),
         tags: tags || []
       }
     });
@@ -223,7 +142,8 @@ const updateDaily = async (event) => {
         videoUrl,
         videoCover,
         location,
-        tags
+        tags,
+        updateTime: new Date()
       }
     });
     return { success: true, message: '日常记录更新成功' };
@@ -277,45 +197,6 @@ const createMemorial = async (event) => {
   }
 };
 
-// 获取纪念日列表
-const getMemorialList = async (event) => {
-  const { coupleId } = event;
-  try {
-    const res = await db.collection('memorial')
-      .where({ coupleId })
-      .orderBy('date', 'asc')
-      .get();
-    return { success: true, data: res.data };
-  } catch (err) {
-    return { success: false, error: err };
-  }
-};
-
-// 更新纪念日
-const updateMemorial = async (event) => {
-  const { _id, title, date, type, isRepeat, remark } = event;
-  try {
-    await db.collection('memorial').doc(_id).update({
-      data: { title, date, type, isRepeat, remark }
-    });
-    return { success: true, message: '纪念日更新成功' };
-  } catch (err) {
-    return { success: false, error: err };
-  }
-};
-
-// 删除纪念日
-const deleteMemorial = async (event) => {
-  const { _id } = event;
-  try {
-    await db.collection('memorial').doc(_id).remove();
-    return { success: true, message: '纪念日删除成功' };
-  } catch (err) {
-    return { success: false, error: err };
-  }
-};
-
-
 // 头像上传（返回可访问 URL）
 const uploadAvatar = async (event) => {
   const { filePath } = event;
@@ -342,6 +223,29 @@ const uploadAvatar = async (event) => {
   }
 };
 
+// ==================== 订阅消息推送 ====================
+
+// 订阅消息推送
+const sendSubscribeMessage = async (event) => {
+  const { templateId, touser, data } = event;
+  try {
+    const res = await cloud.openapi.subscribeMessage.send({
+      touser,
+      template_id: templateId,
+      page: '/pages/index/index', // 推送后跳转页面
+      miniprogram_state: 'trial', // 可选：开发版为 "developer"，体验版为 "trial"，正式版为 "formal"
+      data
+    });
+    if (res.result.success) {
+      return { success: true, message: res };
+    } else {
+      return { success: false, error: res };
+    }
+  } catch (err) { 
+    return { success: false, error: err };
+  }
+};
+
 // ==================== 云函数入口 ====================
 exports.main = async (event, context) => {
   const { type } = event;
@@ -354,8 +258,6 @@ exports.main = async (event, context) => {
       return await createOrUpdateUser(event);
     case 'getUser':
       return await getUser();
-    case 'getCoupleInfo':
-      return await getCoupleInfo(event);
     case 'unbindCouple':
       return await unbindCouple();
     case 'bindPartner':
@@ -372,18 +274,10 @@ exports.main = async (event, context) => {
       return await deleteDaily(event);
     case 'toggleTopDaily':
       return await toggleTopDaily(event);
-    
-    // 纪念日相关
-    case 'createMemorial':
-      return await createMemorial(event);
-    case 'getMemorialList':
-      return await getMemorialList(event);
-    case 'updateMemorial':
-      return await updateMemorial(event);
-    case 'deleteMemorial':
-      return await deleteMemorial(event);
-    
-    // ...existing code...
+
+    // 消息推送
+    case 'sendSubscribeMessage':
+      return await sendSubscribeMessage(event);
     
     // 其他
     case 'getMiniProgramCode':

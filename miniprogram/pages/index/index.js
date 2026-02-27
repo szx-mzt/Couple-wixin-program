@@ -1,3 +1,5 @@
+import { Time } from "../../utils/dateTime";
+
 // index.js
 Page({
     showCardActionSheet: false,
@@ -137,8 +139,8 @@ Page({
 
   // 计算恋爱天数（从 2025-09-14 开始）
   calculateLoveDays() {
-    const startDate = new Date('2025-09-14');
-    const today = new Date();
+    const startDate = Time.toTimestamp('2025-09-14'); // 使用全局挂载的时间工具解析日期字符串为 Date 对象
+    const today = Time.now(); // 使用全局挂载的时间工具获取当前时间 Date 对象
     const days = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
     this.setData({ loveDays: days });
   },
@@ -177,11 +179,10 @@ Page({
   formatDailyList(list) {
     const { userInfo } = this.data;
     let lastDate = '';
-
     return list.map(item => {
-      const createTime = new Date(item.createTime);
-      const dateText = this.formatDate(createTime);
-      const timeText = this.formatTime(createTime);
+      const date = new Date(item.createTime);
+      const dateText = this.formatDate(date);
+      const timeText = this.formatTime(date);
 
       // 判断是否显示日期卡片
       const showDate = dateText !== lastDate;
@@ -198,21 +199,8 @@ Page({
 
   // 格式化日期
   formatDate(date) {
-    const today = new Date();
-    const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-    
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
     const weekDay = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][date.getDay()];
-
-    if (date.toDateString() === today.toDateString()) {
-      return '2026.01.19 星期三';
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return '2026.01.18 星期二';
-    } else {
-      return `${year}.${month.toString().padStart(2, '0')}.${day.toString().padStart(2, '0')} ${weekDay}`;
-    }
+    return Time.format(date, 'YYYY.MM.DD') + ` ${weekDay}`;
   },
 
   // 格式化时间

@@ -22,11 +22,18 @@
         "miniprogram": {
             "list": [
                 {
-                    "name": "我的",
-                    "pathName": "pages/profile/profile",
+                    "name": "发布",
+                    "pathName": "pages/publish/publish",
                     "query": "",
                     "scene": null,
                     "launchMode": "default"
+                },
+                {
+                    "name": "我的",
+                    "pathName": "pages/profile/profile",
+                    "query": "",
+                    "launchMode": "default",
+                    "scene": null
                 }
             ]
         }

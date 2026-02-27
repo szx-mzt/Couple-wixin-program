@@ -62,7 +62,7 @@ Page({
 
   // 用户点击“发布”按钮，先请求订阅授权，再发布
   onPublishTap() {
-    const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGubvfLiCXY';
+    const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGxxxxxxx'; // 替换为实际的订阅消息模板 ID
     wx.requestSubscribeMessage({
       tmplIds: [templateId],
       success: (subRes) => {
@@ -107,7 +107,7 @@ Page({
         wx.showToast({ title: '发布成功', icon: 'success' });
         // ====== 订阅消息推送逻辑 ======
         if (shouldSendMsg && templateId) {
-          const openIds = ['ounUN5p0KPTKPA9KwPVg2eYL3XvY', 'ounUN5oG_SiY37Nb0AMvBD2hfbdo'];
+          const openIds = ['ounUN5p0KPTKPA9KwPVgxxxxxxx', 'ounUN5oG_SiY37Nb0AMvxxxxxxxx']; // 替换为实际的 openid 列表
           console.log('准备发送订阅消息给 openIds:', openIds);
           openIds.forEach(openid => {
             wx.cloud.callFunction({
@@ -117,7 +117,7 @@ Page({
                 templateId,
                 touser: openid,
                 data: {
-                  thing1: { value: openid === 'ounUN5p0KPTKPA9KwPVg2eYL3XvY' ? '老公' : '老婆' },
+                  thing1: { value: openid === 'ounUN5p0KPTKPA9KwPVgxxxxxxxx' ? '老公' : '老婆' },
                   thing2: { value: this.data.content.slice(0, 20) || '有新内容发布' },
                   thing5: { value: '请及时查看' },
                   time3: { value: Time.format(new Date(), 'YYYY-MM-DD HH:mm:ss') }

@@ -4,15 +4,8 @@
  */
 
 export const Time = {
-    /** 解析时间字符串为中国标准时间Date对象 */
-    parse(timeStr) {
-      // 解析为UTC时间后加8小时，得到CST时间
-      const d = new Date(timeStr);
-      return new Date(d.getTime() + 8 * 60 * 60 * 1000);
-    },
   /** 获取当前中国标准时间 Date */
   now() {
-    // 云函数环境默认 UTC+0，需手动加8小时
     const now = new Date();
     return new Date(now.getTime());
   },
@@ -46,8 +39,7 @@ export const Time = {
 
   /** 时间戳 → 中国标准时间字符串 */
   fromTimestamp(ts, pattern = 'YYYY-MM-DD HH:mm:ss') {
-    // ts为UTC时间戳，需加8小时
-    return this.format(new Date(ts + 8 * 60 * 60 * 1000), pattern);
+    return this.format(new Date(ts), pattern);
   },
 
   /** 时间字符串 → 中国标准时间戳（兼容iOS格式） */
@@ -58,19 +50,19 @@ export const Time = {
     if (/^\d{4}-\d{2}-\d{2} /.test(str)) {
       str = str.replace(/-/g, '/');
     }
-    return new Date(str).getTime() + 8 * 60 * 60 * 1000;
+    return new Date(str).getTime();
   },
 
   /** 相差秒数（均按中国标准时间处理） */
   diffSeconds(t1, t2) {
-    const d1 = this.parse(t1).getTime();
-    const d2 = this.parse(t2).getTime();
+    const d1 = this.now(t1).getTime();
+    const d2 = this.now(t2).getTime();
     return Math.floor((d1 - d2) / 1000);
   },
 
   /** 是否今天（中国标准时间） */
   isToday(date) {
-    const dCST = this.parse(date);
+    const dCST = this.now(date);
     const nCST = this.now();
     return (
       dCST.getFullYear() === nCST.getFullYear() &&

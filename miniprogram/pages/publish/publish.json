@@ -1,6 +1,6 @@
 {
-  "navigationBarTitleText": "发布日常",
-  "navigationStyle": "custom",
-  "backgroundColor": "#F8F8F8",
-  "backgroundTextStyle": "dark"
+    "navigationBarTitleText": "发布日常",
+    "navigationBarBackgroundColor": "#FFB6C1",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#FFF5F5"
 }

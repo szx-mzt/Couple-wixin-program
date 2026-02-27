@@ -139,7 +139,7 @@ Page({
 
   // 计算恋爱天数（从 2025-09-14 开始）
   calculateLoveDays() {
-    const startDate = Time.parse('2025-09-14'); // 使用全局挂载的时间工具解析日期字符串为 Date 对象
+    const startDate = Time.toTimestamp('2025-09-14'); // 使用全局挂载的时间工具解析日期字符串为 Date 对象
     const today = Time.now(); // 使用全局挂载的时间工具获取当前时间 Date 对象
     const days = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
     this.setData({ loveDays: days });
@@ -179,11 +179,10 @@ Page({
   formatDailyList(list) {
     const { userInfo } = this.data;
     let lastDate = '';
-
     return list.map(item => {
-      const createTime = Time.parse(item.createTime); // 使用全局挂载的时间工具解析日期字符串为 Date 对象
-      const dateText = this.formatDate(createTime);
-      const timeText = this.formatTime(createTime);
+      const date = new Date(item.createTime);
+      const dateText = this.formatDate(date);
+      const timeText = this.formatTime(date);
 
       // 判断是否显示日期卡片
       const showDate = dateText !== lastDate;

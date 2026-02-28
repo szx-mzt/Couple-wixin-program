@@ -1,9 +1,11 @@
 const cloud = require("wx-server-sdk");
+const Time = require('./util/dateTime');
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
 });
 
 const db = cloud.database();
+
 // 获取openid
 const getOpenId = async () => {
   // 获取基础信息
@@ -35,8 +37,6 @@ const getMiniProgramCode = async () => {
 const createOrUpdateUser = async (event) => {
   const wxContext = cloud.getWXContext();
   const { gender, coupleId, partnerOpenid } = event;
-  const date = new Date();
-  const now = new Date(date.getTime() + 8 * 60 * 60 * 1000);
   
   try {
     // 查询用户是否已存在
@@ -51,7 +51,7 @@ const createOrUpdateUser = async (event) => {
           gender,
           coupleId,
           partnerOpenid,
-          updateTime: now
+          updateTime: Time.now() // 使用时间工具获取当前时间
         }
       });
       return { success: true, message: '用户信息更新成功' };
@@ -63,8 +63,8 @@ const createOrUpdateUser = async (event) => {
           gender,
           coupleId,
           partnerOpenid,
-          createTime: now,
-          updateTime: now
+          createTime: Time.now(),
+          updateTime: Time.now()
         }
       });
       return { success: true, message: '用户创建成功' };
@@ -104,8 +104,8 @@ const createDaily = async (event) => {
         videoCover: videoCover || '',
         location: location || '',
         isTop: false,
-        createTime: new Date(),
-        updateTime: new Date(),
+        createTime: Time.now(),
+        updateTime: Time.now(),
         tags: tags || []
       }
     });
@@ -143,7 +143,7 @@ const updateDaily = async (event) => {
         videoCover,
         location,
         tags,
-        updateTime: new Date()
+        updateTime: Time.now()
       }
     });
     return { success: true, message: '日常记录更新成功' };
@@ -168,30 +168,9 @@ const toggleTopDaily = async (event) => {
   const { _id, isTop } = event;
   try {
     await db.collection('daily').doc(_id).update({
-      data: { isTop }
+      data: { isTop, updateTime: Time.now() }
     });
     return { success: true, message: '操作成功' };
-  } catch (err) {
-    return { success: false, error: err };
-  }
-};
-
-// ==================== 纪念日表 CRUD ====================
-// 创建纪念日
-const createMemorial = async (event) => {
-  const { coupleId, title, date, type, isRepeat, remark } = event;
-  try {
-    await db.collection('memorial').add({
-      data: {
-        coupleId,
-        title,
-        date,
-        type,
-        isRepeat: isRepeat !== undefined ? isRepeat : false,
-        remark: remark || ''
-      }
-    });
-    return { success: true, message: '纪念日创建成功' };
   } catch (err) {
     return { success: false, error: err };
   }
@@ -227,23 +206,42 @@ const uploadAvatar = async (event) => {
 
 // 订阅消息推送
 const sendSubscribeMessage = async (event) => {
-  const { templateId, touser, data } = event;
-  try {
-    const res = await cloud.openapi.subscribeMessage.send({
-      touser,
-      template_id: templateId,
-      page: '/pages/index/index', // 推送后跳转页面
-      miniprogram_state: 'trial', // 可选：开发版为 "developer"，体验版为 "trial"，正式版为 "formal"
-      data
-    });
-    if (res.result.success) {
-      return { success: true, message: res };
-    } else {
-      return { success: false, error: res };
-    }
-  } catch (err) { 
-    return { success: false, error: err };
-  }
+  const { openIds, templateId, content } = event
+
+    // 获取基础信息
+    const wxContext = cloud.getWXContext()
+    // 获取当前用户 openid
+    const OPENID = wxContext.OPENID
+
+    const tasks = openIds.map(openid => {
+
+      return cloud.openapi.subscribeMessage.send({
+        touser: openid,
+        template_id: templateId,
+        miniprogram_state: 'trial', // developer 为开发版；trial 为体验版；formal 为正式版；默认为正式版
+        page: 'pages/index/index',
+        data: {
+          thing1: {
+            value: OPENID === 'ounUN5p0KPTKPA9KwPVg2eYL3XvY'
+              ? '老公'
+              : '老婆'
+          },
+          thing2: {
+            value: content.slice(0, 20) || '有新内容发布'
+          },
+          thing5: {
+            value: '请及时查看'
+          },
+          time3: {
+            value: Time.format(Time.now(),'YYYY-MM-DD HH:mm:ss')
+          }
+        }
+      })
+    })
+    // ⭐ 不让单个失败影响整体
+    const result = await Promise.allSettled(tasks)
+
+    return result
 };
 
 // ==================== 云函数入口 ====================

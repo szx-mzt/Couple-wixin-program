@@ -1,4 +1,5 @@
 import { Time } from "../../utils/dateTime"
+const app = getApp()
 Page({
   data: {
     statusBarHeight: 0,
@@ -9,7 +10,7 @@ Page({
     selectedTags: [], // 已选中的标签
     tagOptions: ['约会', '美食', '旅行', '日常', '纪念日', '礼物', '电影', '运动', '其他'], // 可选标签
     location: '',
-    userInfo: {},
+    userInfo: app.globalData.userInfo || {},
   },
   // 输入内容同步
   onContentInput(e) {
@@ -19,21 +20,9 @@ Page({
   onLocationInput(e) {
     this.setData({ location: e.detail.value });
   },
-  // 获取用户信息
-  async getUserInfo() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'quickstartFunctions',
-        data: { type: 'getUser' }
-      });
-      if (res.result.success && res.result.data) {
-        this.setData({ userInfo: res.result.data });
-      }
-    } catch (err) {
-      console.error('获取用户信息失败', err);
-    }
-  },
+
   onLoad(options) {
+    console.log('onLoad globalData:', app.globalData.openid);
     // 编辑模式回显
     if (options && options.edit && options.cardData) {
       try {
@@ -57,12 +46,11 @@ Page({
     this.setData({
       statusBarHeight: systemInfo.statusBarHeight
     });
-    this.getUserInfo();
   },
 
   // 用户点击“发布”按钮，先请求订阅授权，再发布
   onPublishTap() {
-    const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGxxxxxxx'; // 替换为实际的订阅消息模板 ID
+    const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGubvfLiCXY';
     wx.requestSubscribeMessage({
       tmplIds: [templateId],
       success: (subRes) => {
@@ -102,34 +90,29 @@ Page({
         data: cloudData
       });
       wx.hideLoading();
-
       if (res.result.success) {
         wx.showToast({ title: '发布成功', icon: 'success' });
         // ====== 订阅消息推送逻辑 ======
         if (shouldSendMsg && templateId) {
-          const openIds = ['ounUN5p0KPTKPA9KwPVgxxxxxxx', 'ounUN5oG_SiY37Nb0AMvxxxxxxxx']; // 替换为实际的 openid 列表
-          console.log('准备发送订阅消息给 openIds:', openIds);
-          openIds.forEach(openid => {
-            wx.cloud.callFunction({
-              name: 'quickstartFunctions',
-              data: {
-                type: 'sendSubscribeMessage',
-                templateId,
-                touser: openid,
-                data: {
-                  thing1: { value: openid === 'ounUN5p0KPTKPA9KwPVgxxxxxxxx' ? '老公' : '老婆' },
-                  thing2: { value: this.data.content.slice(0, 20) || '有新内容发布' },
-                  thing5: { value: '请及时查看' },
-                  time3: { value: Time.format(new Date(), 'YYYY-MM-DD HH:mm:ss') }
-                }
-              },
-              success: (v) => {
-                console.log('订阅消息发送成功', openid, v);
-              },
-              fail: (err) => {
-                console.error('订阅消息发送失败', openid, err);
-              }
-            });
+          const openIds = [
+            'ounUN5p0KPTKPA9KwPVg2eYL3XvY',
+            'ounUN5oG_SiY37Nb0AMvBD2hfbdo'
+          ];
+
+          wx.cloud.callFunction({
+            name: 'quickstartFunctions',
+            data: {
+              type: 'sendSubscribeMessage',
+              templateId,
+              openIds, // ⭐ 直接传数组
+              content: this.data.content
+            },
+            success: res => {
+              console.log('发送完成', res);
+            },
+            fail: err => {
+              console.error('发送失败', err);
+            }
           });
         }
         // ====== END ======

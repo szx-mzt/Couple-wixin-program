@@ -1,4 +1,5 @@
 import { Time } from "../../utils/dateTime";
+const { applyTheme } = require('../../utils/theme.js')
 const app = getApp();
 // index.js
 Page({
@@ -73,7 +74,8 @@ Page({
     hasMore: true,
     loading: false,
     openid: app.globalData.openid || '',
-    skipRefreshOnShow: false
+    skipRefreshOnShow: false,
+    pageBgColor: '#FFF5F5',
   },
 
   async onLoad(options) {
@@ -81,6 +83,7 @@ Page({
     this.calculateLoveDays();
   },
   async onShow() {
+    applyTheme(this)
     if (this.skipRefreshOnShow) {
       this.skipRefreshOnShow = false;
       return;

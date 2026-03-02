@@ -3,17 +3,26 @@ App({
   globalData: {
     openid: "",
     userInfo: null,
+    themeSettings: null,
   },
 
   onLaunch: async function () {
-    this.globalData = {
+    // 加载并缓存主题设置
+    try {
+      const stored = wx.getStorageSync('appThemeSettings')
+      this.globalData.themeSettings = stored || { navBgColor: '#ff69b4', pageBgColor: '#FFF5F5' }
+    } catch (e) {
+      this.globalData.themeSettings = { navBgColor: '#ff69b4', pageBgColor: '#FFF5F5' }
+    }
+
+    this.globalData = Object.assign(this.globalData, {
       // env 参数说明：
       //   env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会默认请求到哪个云环境的资源
       //   此处请填入环境 ID, 环境 ID 可打开云控制台查看
       //   如不填则使用默认环境（第一个创建的环境）
     //   env: "cloud1-5g9hjld9cb8fe986",
       env: "max-2026-ban-4gxxli94aac23368"
-    };
+    });
     if (!wx.cloud) {
       console.error("请使用 2.2.3 或以上的基础库以使用云能力");
     } else {

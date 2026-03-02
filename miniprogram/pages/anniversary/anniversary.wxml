@@ -1,5 +1,5 @@
 <!--pages/anniversary/anniversary.wxml-->
-<view class="anniversary-container">
+<view class="anniversary-container" style="background: {{pageBgColor}}; min-height: 100vh;">
 	<view class="anniversary-list">
 		<view class="anniversary-card">
 			<view class="card-left">

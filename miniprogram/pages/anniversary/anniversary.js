@@ -1,11 +1,9 @@
 const { Time } = require('../../utils/dateTime.js');
+const { applyTheme } = require('../../utils/theme.js');
 
 // pages/anniversary/anniversary.js
 Page({
 
-  /**
-   * 页面的初始数据
-   */
   data: {
     wifeLunar: { month: 7, day: 16 }, // 农历
     husbandLunar: { month: 6, day: 24 },
@@ -17,14 +15,16 @@ Page({
     loveMonth: 9,
     loveDay: 14,
     loveDays: 0,
-    loveCountdown: 0
+    loveCountdown: 0,
+    pageBgColor: '#FFF5F5',
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad(options) {
     this.calculateAnniversaries();
+  },
+
+  onShow() {
+    applyTheme(this)
   },
 
   calculateAnniversaries() {
@@ -74,7 +74,4 @@ Page({
       loveCountdown
     });
   },
-  },
-
-  
-)
+})

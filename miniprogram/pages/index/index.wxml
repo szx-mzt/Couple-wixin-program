@@ -1,4 +1,4 @@
-<view class="container" bindtap="closeCardActionSheet">
+<view class="container" bindtap="closeCardActionSheet" style="background: {{pageBgColor}}; min-height: 100vh;">
     <!-- 时光轴列表 -->
     <scroll-view class="timeline-scroll" scroll-y bindscrolltolower="loadMore" lower-threshold="100"
         style="padding-top: unset">

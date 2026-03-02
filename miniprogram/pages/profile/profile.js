@@ -1,4 +1,5 @@
 import { Time } from "../../utils/dateTime"
+const { applyTheme } = require('../../utils/theme.js')
 const app = getApp()
 Page({
   data: {
@@ -6,7 +7,8 @@ Page({
     loveStartDate: '2025-09-14',
     loveDays: 0,
     themeColor: '#ff69b4',
-    openid: ''
+    openid: '',
+    pageBgColor: '#FFF5F5',
   },
 
   onLoad() {
@@ -14,6 +16,7 @@ Page({
   },
 
   onShow() {
+    applyTheme(this)
     this.initUserData()
   },
 
@@ -53,6 +56,13 @@ Page({
         // TODO: 上传并设置背景图
         wx.showToast({ title: '背景已更换', icon: 'success' })
       }
+    })
+  },
+
+  // 外观设置
+  goToSettings() {
+    wx.navigateTo({
+      url: '/pages/settings/settings'
     })
   },
 

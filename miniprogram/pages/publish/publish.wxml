@@ -10,7 +10,7 @@
   
   module.exports.isTagSelected = isTagSelected;
 </wxs>
-<view class="publish-container">
+<view class="publish-container" style="background: {{pageBgColor}}; min-height: 100vh;">
   <!-- 内容区域 -->
   <scroll-view class="content-scroll" scroll-y>
     <!-- 文字输入框 -->

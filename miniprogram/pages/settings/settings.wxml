@@ -1,2 +1,76 @@
 <!--pages/settings/settings.wxml-->
-<text>pages/settings/settings.wxml</text>
+<scroll-view class="settings-page" scroll-y style="background: {{pageBgColor}};">
+
+  <!-- 导航栏颜色 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">导航栏背景色</text>
+      <view class="color-preview-dot" style="background: {{selectedNavColor}}; border: 2rpx solid rgba(0,0,0,0.1);"></view>
+    </view>
+    <view class="color-grid">
+      <view
+        class="color-item {{item.color == selectedNavColor ? 'selected' : ''}}"
+        wx:for="{{navColorOptions}}"
+        wx:key="color"
+        bindtap="selectNavColor"
+        data-color="{{item.color}}"
+        style="background: {{item.color}}; border: 2rpx solid rgba(0,0,0,0.08);"
+      >
+        <text wx:if="{{item.color == selectedNavColor}}" class="check-icon">✓</text>
+        <text class="color-name" style="color: {{item.color == '#FFFFFF' || item.color == '#FFB6C1' || item.color == '#FFF5F5' ? '#666' : '#fff'}}">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 页面背景色 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">页面背景色</text>
+      <view class="color-preview-dot" style="background: {{selectedBgColor}}; border: 2rpx solid rgba(0,0,0,0.1);"></view>
+    </view>
+    <view class="color-grid">
+      <view
+        class="color-item {{item.color == selectedBgColor ? 'selected' : ''}}"
+        wx:for="{{bgColorOptions}}"
+        wx:key="color"
+        bindtap="selectBgColor"
+        data-color="{{item.color}}"
+        style="background: {{item.color}}; border: 2rpx solid rgba(0,0,0,0.08);"
+      >
+        <text wx:if="{{item.color == selectedBgColor}}" class="check-icon" style="color: #333;">✓</text>
+        <text class="color-name" style="color: #666;">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 当前效果预览 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">效果预览</text>
+    </view>
+    <view class="preview-card" style="background: {{selectedBgColor}};">
+      <view class="preview-nav" style="background: {{selectedNavColor}};">
+        <text class="preview-nav-title" style="color: {{selectedNavColor == '#FFFFFF' || selectedNavColor == '#FFB6C1' ? '#444' : '#fff'}}">甜蜜日常</text>
+      </view>
+      <view class="preview-content">
+        <view class="preview-tag" style="background: {{selectedNavColor}}; opacity: 0.85;">
+          <text style="color: {{selectedNavColor == '#FFFFFF' || selectedNavColor == '#FFB6C1' ? '#444' : '#fff'}}; font-size: 22rpx;">约会</text>
+        </view>
+        <view class="preview-tag" style="background: {{selectedNavColor}}; opacity: 0.85;">
+          <text style="color: {{selectedNavColor == '#FFFFFF' || selectedNavColor == '#FFB6C1' ? '#444' : '#fff'}}; font-size: 22rpx;">美食</text>
+        </view>
+        <text class="preview-text">今天也是幸福的一天 ❤️</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="btn-group">
+    <button class="btn-save" bindtap="saveSettings" style="background: {{selectedNavColor}};">
+      <text style="color: {{selectedNavColor == '#FFFFFF' || selectedNavColor == '#FFB6C1' ? '#444' : '#fff'}}">保存设置</text>
+    </button>
+    <button class="btn-reset" bindtap="resetSettings">恢复默认</button>
+  </view>
+
+  <view class="bottom-safe"></view>
+</scroll-view>

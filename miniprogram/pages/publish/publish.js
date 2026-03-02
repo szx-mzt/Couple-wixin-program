@@ -1,3 +1,4 @@
+const { applyTheme } = require('../../utils/theme.js')
 const app = getApp()
 Page({
   data: {
@@ -10,6 +11,7 @@ Page({
     tagOptions: ['约会', '美食', '旅行', '日常', '纪念日', '礼物', '电影', '运动', '其他'], // 可选标签
     location: '',
     userInfo: app.globalData.userInfo || {},
+    pageBgColor: '#FFF5F5',
   },
   // 输入内容同步
   onContentInput(e) {
@@ -47,7 +49,11 @@ Page({
     });
   },
 
-  // 用户点击“发布”按钮，先请求订阅授权，再发布
+  onShow() {
+    applyTheme(this)
+  },
+
+  // 用户点击"发布"按钮，先请求订阅授权，再发布
   onPublishTap() {
     const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGubvfLiCXY';
     wx.requestSubscribeMessage({

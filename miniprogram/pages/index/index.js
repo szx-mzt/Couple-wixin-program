@@ -54,8 +54,9 @@ Page({
               data: { type: 'deleteDaily', _id: id }
             }).then(() => {
               wx.showToast({ title: '删除成功', icon: 'success' });
-              // 刷新列表
-              this.setData({ dailyList: this.data.dailyList.filter(item => item._id !== id) });
+              // 删除后重置页码并刷新列表，保证分组和时间显示正常
+              this.setData({ page: 1 });
+              this.loadDailyList();
             }).catch(() => {
               wx.showToast({ title: '删除失败', icon: 'none' });
             });

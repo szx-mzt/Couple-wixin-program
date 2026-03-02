@@ -1,5 +1,5 @@
 import { Time } from "../../utils/dateTime"
-
+const app = getApp()
 Page({
   data: {
     statusBarHeight: 0,

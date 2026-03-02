@@ -265,15 +265,42 @@
   color: #FF69B4;
   font-weight: 600;
 }
-.card-action-sheet-float{
+
+.card-action-sheet-float {
   position: absolute;
-    width: 50px;
-    background-color: #fff;
-    right: 0;
+  width: 50px;
+  background-color: #fff;
+  right: 20rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  /* 新增：为右上角加尖角 */
+  overflow: visible;
 }
-.card-action-sheet-float-inner{
+
+.card-action-sheet-float::before {
+  content: '';
+  position: absolute;
+  top: -10rpx;
+  right: 0rpx;
+  width: 0;
+  height: 0;
+  border-left: 30rpx solid transparent;
+  border-right: 30rpx solid transparent;
+  border-bottom: 22rpx solid #fff;
+  z-index: 2;
+}
+
+.card-action-sheet-float-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 0;
+  padding: 10rpx 0;
+}
+
+.action-sheet-item {
+  width: 100%;
+  padding: 5rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #333;
 }

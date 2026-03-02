@@ -1,16 +1,11 @@
 // app.js
-import { Time } from './utils/dateTime';
-
 App({
   globalData: {
     openid: "",
     userInfo: null,
   },
 
-  // 全局挂载时间工具
-  Time,
-
-  onLaunch: function () {
+  onLaunch: async function () {
     this.globalData = {
       // env 参数说明：
       //   env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会默认请求到哪个云环境的资源
@@ -28,7 +23,9 @@ App({
     }
 
     // 获取 openid
-    this.getOpenId();
+    await this.getOpenId();
+    // 获取用户信息
+    await this.getUserInfo();
   },
 
   async getOpenId() {
@@ -44,4 +41,24 @@ App({
       console.error("获取 openid 失败", err);
     }
   },
+  async getUserInfo() {
+    try {
+      // 先获取 openid
+      const openid = this.globalData.openid;
+      
+      // 再获取用户详细信息
+      const res = await wx.cloud.callFunction({
+        name: 'quickstartFunctions',
+        data: { type: 'getUser' }
+      })
+      
+      return {
+        openid,
+        ...res.result.data
+      }
+    } catch (err) {
+      console.error('获取用户信息失败', err)
+      throw err
+    }
+  }
 });

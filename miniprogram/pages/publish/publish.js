@@ -1,4 +1,4 @@
-import { Time } from "../../utils/dateTime"
+const app = getApp()
 Page({
   data: {
     statusBarHeight: 0,
@@ -9,7 +9,7 @@ Page({
     selectedTags: [], // 已选中的标签
     tagOptions: ['约会', '美食', '旅行', '日常', '纪念日', '礼物', '电影', '运动', '其他'], // 可选标签
     location: '',
-    userInfo: {},
+    userInfo: app.globalData.userInfo || {},
   },
   // 输入内容同步
   onContentInput(e) {
@@ -19,21 +19,9 @@ Page({
   onLocationInput(e) {
     this.setData({ location: e.detail.value });
   },
-  // 获取用户信息
-  async getUserInfo() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'quickstartFunctions',
-        data: { type: 'getUser' }
-      });
-      if (res.result.success && res.result.data) {
-        this.setData({ userInfo: res.result.data });
-      }
-    } catch (err) {
-      console.error('获取用户信息失败', err);
-    }
-  },
+
   onLoad(options) {
+    console.log('onLoad globalData:', app.globalData.openid);
     // 编辑模式回显
     if (options && options.edit && options.cardData) {
       try {
@@ -57,21 +45,20 @@ Page({
     this.setData({
       statusBarHeight: systemInfo.statusBarHeight
     });
-    this.getUserInfo();
   },
 
   // 用户点击“发布”按钮，先请求订阅授权，再发布
   onPublishTap() {
-    const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGxxxxxxx'; // 替换为实际的订阅消息模板 ID
+    const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGubvfLiCXY';
     wx.requestSubscribeMessage({
       tmplIds: [templateId],
       success: (subRes) => {
         console.log('订阅消息授权结果', subRes);
+        if (subRes[templateId] === 'accept') {
         this.handlePublish(subRes[templateId] === 'accept', templateId);
-      },
-      fail: (err) => {
-        console.error('订阅消息授权失败', err);
-        this.handlePublish(false, templateId);
+        } else {
+          this.handlePublish(false, templateId);
+        }
       }
     });
   },
@@ -102,49 +89,36 @@ Page({
         data: cloudData
       });
       wx.hideLoading();
-
       if (res.result.success) {
         wx.showToast({ title: '发布成功', icon: 'success' });
-        // ====== 订阅消息推送逻辑 ======
         if (shouldSendMsg && templateId) {
-          const openIds = ['ounUN5p0KPTKPA9KwPVgxxxxxxx', 'ounUN5oG_SiY37Nb0AMvxxxxxxxx']; // 替换为实际的 openid 列表
-          console.log('准备发送订阅消息给 openIds:', openIds);
-          openIds.forEach(openid => {
-            wx.cloud.callFunction({
-              name: 'quickstartFunctions',
-              data: {
-                type: 'sendSubscribeMessage',
-                templateId,
-                touser: openid,
-                data: {
-                  thing1: { value: openid === 'ounUN5p0KPTKPA9KwPVgxxxxxxxx' ? '老公' : '老婆' },
-                  thing2: { value: this.data.content.slice(0, 20) || '有新内容发布' },
-                  thing5: { value: '请及时查看' },
-                  time3: { value: Time.format(new Date(), 'YYYY-MM-DD HH:mm:ss') }
-                }
-              },
-              success: (v) => {
-                console.log('订阅消息发送成功', openid, v);
-              },
-              fail: (err) => {
-                console.error('订阅消息发送失败', openid, err);
-              }
-            });
+          const openIds = [
+            'ounUN5p0KPTKPA9KwPVg2eYL3XvY',
+            'ounUN5oG_SiY37Nb0AMvBD2hfbdo'
+          ];
+          wx.cloud.callFunction({
+            name: 'quickstartFunctions',
+            data: {
+              type: 'sendSubscribeMessage',
+              templateId,
+              openIds,
+              content: this.data.content
+            },
+            success: res => {
+              wx.redirectTo({ url: '/pages/index/index' });
+            },
+            fail: err => {
+              wx.redirectTo({ url: '/pages/index/index' });
+            }
           });
+        } else {
+          wx.redirectTo({ url: '/pages/index/index' });
         }
-        // ====== END ======
-        setTimeout(() => {
-          wx.navigateTo({
-            url: '/pages/index/index',
-            parameters: { refresh: true }
-          });
-        }, 1500);
       } else {
         wx.showToast({ title: '发布失败', icon: 'none' });
       }
     } catch (err) {
       wx.hideLoading();
-      console.error('发布失败', err);
       wx.showToast({ title: '发布失败', icon: 'none' });
     }
   },
@@ -180,17 +154,24 @@ Page({
   // 处理媒体文件
   async handleMediaFiles(files) {
     wx.showLoading({ title: '上传中...' });
-
-    for (let file of files) {
-      console.log('处理文件', file);
-      if (file.fileType === 'image') {
-        await this.uploadImage(file.tempFilePath);
-      } else if (file.fileType === 'video') {
-        await this.uploadVideo(file.tempFilePath);
-        break; // 只允许上传一个视频
-      }
+    // 并发上传图片，视频仍单独处理
+    const imgFiles = files.filter(f => f.fileType === 'image');
+    const videoFiles = files.filter(f => f.fileType === 'video');
+    let imgUploadTasks = [];
+    if (imgFiles.length > 0) {
+      imgUploadTasks = imgFiles.map(f => this.uploadImage(f.tempFilePath));
     }
-
+    let videoUploadTask = null;
+    if (videoFiles.length > 0) {
+      videoUploadTask = this.uploadVideo(videoFiles[0].tempFilePath);
+    }
+    await Promise.all([...imgUploadTasks, videoUploadTask].filter(Boolean));
+    // 批量上传后统一 setData
+    this.setData({
+      imgList: this.data.imgList,
+      videoUrl: this.data.videoUrl,
+      videoCover: this.data.videoCover
+    });
     wx.hideLoading();
   },
 
@@ -200,15 +181,8 @@ Page({
       const timestamp = Date.now();
       const random = Math.floor(Math.random() * 10000);
       const cloudPath = `daily/img/${timestamp}_${random}.jpg`;
-
-      const res = await wx.cloud.uploadFile({
-        cloudPath,
-        filePath
-      });
-      console.log('上传图片',res)
-      const imgList = [...this.data.imgList, res.fileID];
-      this.setData({ imgList });
-
+      const res = await wx.cloud.uploadFile({ cloudPath, filePath });
+      this.data.imgList.push(res.fileID);
       return res.fileID;
     } catch (err) {
       console.error('图片上传失败', err);
@@ -221,27 +195,12 @@ Page({
     try {
       const timestamp = Date.now();
       const cloudPath = `daily/video/${timestamp}.mp4`;
-
-      // 上传视频
-      const videoRes = await wx.cloud.uploadFile({
-        cloudPath,
-        filePath
-      });
-
-      // 生成封面（截取首帧）
+      const videoRes = await wx.cloud.uploadFile({ cloudPath, filePath });
       const coverPath = await this.generateVideoCover(filePath);
       const coverCloudPath = `daily/cover/${timestamp}.jpg`;
-
-      const coverRes = await wx.cloud.uploadFile({
-        cloudPath: coverCloudPath,
-        filePath: coverPath
-      });
-
-      this.setData({
-        videoUrl: videoRes.fileID,
-        videoCover: coverRes.fileID
-      });
-
+      const coverRes = await wx.cloud.uploadFile({ cloudPath: coverCloudPath, filePath: coverPath });
+      this.data.videoUrl = videoRes.fileID;
+      this.data.videoCover = coverRes.fileID;
       wx.showToast({ title: '视频上传成功', icon: 'success' });
     } catch (err) {
       console.error('视频上传失败', err);

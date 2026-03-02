@@ -1,5 +1,5 @@
 import { Time } from "../../utils/dateTime";
-
+const app = getApp();
 // index.js
 Page({
     showCardActionSheet: false,
@@ -54,8 +54,9 @@ Page({
               data: { type: 'deleteDaily', _id: id }
             }).then(() => {
               wx.showToast({ title: '删除成功', icon: 'success' });
-              // 刷新列表
-              this.setData({ dailyList: this.data.dailyList.filter(item => item._id !== id) });
+              // 删除后重置页码并刷新列表，保证分组和时间显示正常
+              this.setData({ page: 1 });
+              this.loadDailyList();
             }).catch(() => {
               wx.showToast({ title: '删除失败', icon: 'none' });
             });
@@ -64,33 +65,26 @@ Page({
       });
     },
   data: {
-    userInfo: {},
+    userInfo: app.globalData.userInfo || {},
     loveDays: 0,
     dailyList: [],
     page: 1,
     pageSize: 10,
     hasMore: true,
     loading: false,
-    openid: '',
+    openid: app.globalData.openid || '',
     skipRefreshOnShow: false
   },
 
   async onLoad(options) {
     console.log('onLoad options9999900000:', options);
-    await this.getOpenId();
-    await this.loadUserInfo();
-    // this.resetDailyState();
-    // await this.loadDailyList();
     this.calculateLoveDays();
-    // 移除绑定邀请逻辑
   },
   async onShow() {
     if (this.skipRefreshOnShow) {
       this.skipRefreshOnShow = false;
       return;
     }
-    await this.loadUserInfo();
-    // this.resetDailyState();
     console.log('onShow 调用 loadDailyList')
     // 仅首次进入页面或从发布页返回时刷新
     if (this.skipRefreshOnShow) {
@@ -101,39 +95,6 @@ Page({
     if (!this._hasLoadedOnce) {
       await this.loadDailyList();
       this._hasLoadedOnce = true;
-    }
-  },
-  // 获取 openid
-  async getOpenId() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'quickstartFunctions',
-        data: { type: 'getOpenId' }
-      })
-      
-      const openid = res.result.openid
-      this.setData({ openid })
-      
-      console.log('当前用户 openid:', openid)
-      
-    } catch (err) {
-      console.error('获取 openid 失败', err)
-    }
-  },
-
-  // 加载用户信息
-  async loadUserInfo() {
-    try {
-      const userRes = await wx.cloud.callFunction({
-        name: 'quickstartFunctions',
-        data: { type: 'getUser' }
-      });
-      if (userRes.result.success && userRes.result.data) {
-        const user = userRes.result.data;
-        this.setData({ userInfo: user });
-      }
-    } catch (err) {
-      console.error('加载用户信息失败', err);
     }
   },
 
@@ -177,7 +138,6 @@ Page({
 
   // 格式化日常列表数据
   formatDailyList(list) {
-    const { userInfo } = this.data;
     let lastDate = '';
     return list.map(item => {
       const date = new Date(item.createTime);
@@ -269,7 +229,6 @@ Page({
 
   // 下拉刷新
    async onPullDownRefresh() {
-    await this.loadUserInfo();
     this.resetDailyState();
     await this.loadDailyList();
     wx.stopPullDownRefresh();

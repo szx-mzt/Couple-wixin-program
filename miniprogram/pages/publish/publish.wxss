@@ -134,9 +134,9 @@
   position: relative;
   width: 100%;
   padding-bottom: 100%;
-  border: 2rpx dashed #FFB6C1;
+  border: 2rpx dashed transparent;
   border-radius: 12rpx;
-  background: #FFF5F5;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,7 +149,6 @@
   left: 50%;
   transform: translate(-50%, -80%);
   font-size: 48rpx;
-  color: #FFB6C1;
 }
 
 .add-text {
@@ -185,7 +184,7 @@
 .upload-btn {
   width: 100%;
   background: #FFF;
-  border: 2rpx solid #FFB6C1;
+  border: 2rpx solid transparent;
   border-radius: 12rpx;
   padding: 40rpx 0;
   display: flex;
@@ -233,11 +232,7 @@
   transition: all 0.3s ease;
 }
 
-.tag-item.active {
-  background-color: #ffb3d9;
-  border-color: #ff69b4;
-  color: #fff;
-}
+/* .tag-item.active 颜色由 inline style 动态注入 */
 
 .tag-text {
   font-size: 28rpx;

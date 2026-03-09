@@ -46,8 +46,8 @@
         </view>
         
         <!-- 添加图片按钮 -->
-        <view class="add-btn" wx:if="{{imgList.length < 9 && !videoUrl}}" bindtap="chooseImage">
-          <text class="add-icon">+</text>
+        <view class="add-btn" wx:if="{{imgList.length < 9 && !videoUrl}}" bindtap="chooseImage" style="border-color: {{navBgColor}}; background: {{pageBgColor}};">
+          <text class="add-icon" style="color: {{navBgColor}};">+</text>
           <text class="add-text">添加图片/视频</text>
         </view>
       </view>
@@ -62,7 +62,7 @@
 
       <!-- 上传按钮（初始状态） -->
       <view class="upload-btn-group" wx:if="{{imgList.length === 0 && !videoUrl}}">
-        <button class="upload-btn" bindtap="chooseImage">
+        <button class="upload-btn" bindtap="chooseImage" style="border-color: {{navBgColor}}; background: {{pageBgColor}};">
           <text class="btn-icon">📷</text>
           <text class="btn-text">上传图片/视频</text>
           <text class="btn-hint">最多9张图片</text>
@@ -77,9 +77,10 @@
         <text class="title-text">添加标签</text>
       </view>
       <view class="tag-list">
-        <view 
-          class="tag-item {{utils.isTagSelected(selectedTags, item) ? 'active' : ''}}" 
-          wx:for="{{tagOptions}}" 
+        <view
+          class="tag-item {{utils.isTagSelected(selectedTags, item) ? 'active' : ''}}"
+          style="{{utils.isTagSelected(selectedTags, item) ? 'background-color:' + navBgColor + '; border-color:' + navBgColor + '; color:' + pageBgColor + ';' : ''}}"
+          wx:for="{{tagOptions}}"
           wx:key="index"
           bindtap="toggleTag"
           data-tag="{{item}}"

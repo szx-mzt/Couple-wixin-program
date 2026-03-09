@@ -12,6 +12,7 @@ Page({
     location: '',
     userInfo: app.globalData.userInfo || {},
     pageBgColor: '#FFF5F5',
+    navBgColor: app.globalData.themeSettings ? app.globalData.themeSettings.navBgColor : '#ff69b4',
   },
   // 输入内容同步
   onContentInput(e) {
@@ -55,18 +56,20 @@ Page({
 
   // 用户点击"发布"按钮，先请求订阅授权，再发布
   onPublishTap() {
-    const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGubvfLiCXY';
-    wx.requestSubscribeMessage({
-      tmplIds: [templateId],
-      success: (subRes) => {
-        console.log('订阅消息授权结果', subRes);
-        if (subRes[templateId] === 'accept') {
-        this.handlePublish(subRes[templateId] === 'accept', templateId);
-        } else {
-          this.handlePublish(false, templateId);
-        }
-      }
-    });
+    // 暂且注释掉订阅消息授权，因为单一的一次性订阅模板不能适配需求，长期订阅模板要企业认证
+    // const templateId = '6yV5bqlNF3WbJy6ZeOcMJ_s2bieU2f9NWGubvfLiCXY';
+    // wx.requestSubscribeMessage({
+    //   tmplIds: [templateId],
+    //   success: (subRes) => {
+    //     console.log('订阅消息授权结果', subRes);
+    //     if (subRes[templateId] === 'accept') {
+    //     this.handlePublish(subRes[templateId] === 'accept', templateId);
+    //     } else {
+    //       this.handlePublish(false, templateId);
+    //     }
+    //   }
+    // });
+    this.handlePublish(false, null);
   },
 
   // 发布日常（可选推送订阅消息）

@@ -66,7 +66,7 @@
                 <!-- 标签 + 地点 -->
                 <view class="card-footer">
                     <view class="tags" wx:if="{{item.tags.length > 0}}">
-                        <text class="tag" wx:for="{{item.tags}}" wx:key="index">#{{item}}</text>
+                        <text class="tag" style="background: {{navBgColor}}; color: {{pageBgColor}};" wx:for="{{item.tags}}" wx:key="index">#{{item}}</text>
                     </view>
                     <text class="location" wx:if="{{item.location}}">📍 {{item.location}}</text>
                 </view>
@@ -74,7 +74,7 @@
         </block>
 
         <!-- 加载更多 -->
-        <view class="loading-more" wx:if="{{hasMore}}">
+        <view class="loading-more" wx:if="{{hasMore && loading}}">
             <text>加载中...</text>
         </view>
 

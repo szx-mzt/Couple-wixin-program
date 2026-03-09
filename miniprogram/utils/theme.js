@@ -55,7 +55,10 @@ function applyTheme(pageInstance) {
     animation: { duration: 200, timingFunc: 'easeIn' }
   })
   if (pageInstance && pageInstance.setData) {
-    pageInstance.setData({ pageBgColor: settings.pageBgColor })
+    pageInstance.setData({
+      pageBgColor: settings.pageBgColor,
+      navBgColor: settings.navBgColor
+    })
   }
 }
 

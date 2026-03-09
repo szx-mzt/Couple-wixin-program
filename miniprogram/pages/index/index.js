@@ -76,6 +76,7 @@ Page({
     openid: app.globalData.openid || '',
     skipRefreshOnShow: false,
     pageBgColor: '#FFF5F5',
+    navBgColor: '#ff69b4',
   },
 
   async onLoad(options) {
@@ -86,13 +87,6 @@ Page({
     applyTheme(this)
     if (this.skipRefreshOnShow) {
       this.skipRefreshOnShow = false;
-      return;
-    }
-    console.log('onShow 调用 loadDailyList')
-    // 仅首次进入页面或从发布页返回时刷新
-    if (this.skipRefreshOnShow) {
-      this.skipRefreshOnShow = false;
-      await this.loadDailyList();
       return;
     }
     if (!this._hasLoadedOnce) {
@@ -125,7 +119,11 @@ Page({
       console.log('获取日常列表响应999999999999', res);
       if (res.result.success) {
         let dailyList = res.result.data;
-        dailyList = this.formatDailyList(dailyList);
+        // 加载更多时，将上一页最后一条的日期传入，避免跨页重复显示日期头
+        const lastDate = isLoadMore && this.data.dailyList.length > 0
+          ? this.data.dailyList[this.data.dailyList.length - 1].dateText
+          : '';
+        dailyList = this.formatDailyList(dailyList, lastDate);
         const newList = isLoadMore ? [...this.data.dailyList, ...dailyList] : dailyList;
         this.setData({
           dailyList: newList,
@@ -135,13 +133,18 @@ Page({
       }
     } catch (err) {
       console.error('加载日常列表失败', err);
-      this.setData({ loading: false });
+      // 加载失败时回滚 page，避免跳页
+      if (isLoadMore) {
+        this.setData({ page: this.data.page - 1, loading: false });
+      } else {
+        this.setData({ loading: false });
+      }
     }
   },
 
   // 格式化日常列表数据
-  formatDailyList(list) {
-    let lastDate = '';
+  formatDailyList(list, initialLastDate = '') {
+    let lastDate = initialLastDate;
     return list.map(item => {
       const date = new Date(item.createTime);
       const dateText = this.formatDate(date);

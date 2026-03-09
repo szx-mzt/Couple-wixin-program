@@ -119,6 +119,7 @@
   <view class="footer-publish">
     <button 
       class="publish-btn" 
+      style="background: {{navBgColor}} !important;"
       bindtap="onPublishTap"
     >
       发布

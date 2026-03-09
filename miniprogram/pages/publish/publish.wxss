@@ -7,7 +7,7 @@
 }
 
 .publish-btn {
-  background-color: #FF69B4 !important;
+  /* background-color: #FF69B4 !important; */
   color: #FFF !important;
   font-size: 28rpx;
   padding: 12rpx 32rpx;
